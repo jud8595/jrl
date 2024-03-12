@@ -63,9 +63,62 @@ export class SearchBar {
             this.searchBar.focus();
             this.screen.render();
         });
+
+
 */
+        this.searchBar.on('keypress', (ch: any, key: any) => {
+            //this.searchBar.render();
+            //this.screen.render();
+            setTimeout(() => {
+                this.searchBarService.textChanged(this.searchBar.getValue());
+                if (this.searchBarService.getStatus() === 'Edition') {
+                    this.searchBar.show();
+                    this.searchBar.focus();
+                } else {
+                    this.searchBar.hide();
+                }
+                this.searchBar.setValue(this.searchBarService.getText());
+                this.searchBar.render();
+                this.screen.render();
+            }, 10);
+        });
+
         this.screen.on('keypress', (ch: any, key: any) => {
-            fs.writeFileSync('debug.log', 'searchbar keypress ' + JSON.stringify({ch: ch, key: key}) + '\n');
+            this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
+            if (this.searchBarService.getStatus() === 'Edition') {
+                this.searchBar.show();
+                this.searchBar.focus();
+            } else {
+                this.searchBar.hide();
+            }
+            this.searchBar.setValue(this.searchBarService.getText());
+            this.searchBar.render();
+            this.screen.render();
+        });
+
+        // si la searchbar reste tout le temps visible alors '/' est append
+        // si la searchbar se cache, alors '/' l'affiche
+        // 1- soit cette logique fait partie du service
+        // 2- soit non
+        // la business logic de la searchbar: elle contient que /des ou :zer
+        // d'un point de vue extern, si elle contient du text on l'affiche
+        // attention: si on a decide de masquer apres return, comment on affiche a nouveau ?
+        // j'ai l'impression que ce scenario n'est pas possible
+        // a la fois S gère si on affiche ou pas la searchbar (sans savoir comment elle fonctionne), juste
+        // savoir que valider masque la S. Comment on la réactive alors ? on ne peut pas
+        // soit il faut connaître les triggers pour reactiver soit le SS contient la logique d'affichage
+        // sol1: SS doit avoir un mode d'edition et un mode de non-edition/affichage/status_validé
+        //       donc si mode d edition on append '/', sinon on ca redeclenche le mode edition
+        //       donc afficher S si mode edition uniquement sinon on masque
+
+
+        /*this.searchBar.on('keypress', (ch: any, key: any) => {
+            fs.writeFileSync('debug.log', '[searchbar] keypress ' + JSON.stringify({ch: ch, key: key}) + '\n');
+            fs.writeFileSync('debug.log', '\n');
+            this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
+        });
+        this.screen.on('keypress', (ch: any, key: any) => {
+            fs.writeFileSync('debug.log', '[searchbar] screen keypress ' + JSON.stringify({ch: ch, key: key}) + '\n');
             fs.writeFileSync('debug.log', '\n');
             this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
             // Check if the pressed key is the escape key
@@ -83,7 +136,7 @@ export class SearchBar {
                 //this.searchBar.rewindFocus();
                 this.screen.render();
             }
-        });
+        });*/
         /*this.screen.on('keypress', (ch: any, key: any) => {
             //this.searchBar.add . setContent(this.searchBar.content + ch);
             if (key == '/' || key == ':') {

@@ -15,7 +15,6 @@ export class JiraListBoxSearch {
         this.searchBar = new SearchBar(screen);
         this.screen = screen;
         this.handleKeyboard();
-        fs.appendFileSync('debug.log', '****hello1 \n');
 
         this.searchBar.onFilterChange((filter: string) => {
             this.jiraListBox.filter(filter);
@@ -28,7 +27,7 @@ export class JiraListBoxSearch {
 
     private handleKeyboard() {
         this.screen.key('tab', () => {
-            fs.appendFileSync('debug.log', 'called tab \n');
+            fs.appendFileSync('debug.log', '[JiraListBoxSearch] called tab \n');
             this.searchBar.getComponent().focus();
             this.screen.render();
         });

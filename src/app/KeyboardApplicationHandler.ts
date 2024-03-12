@@ -5,7 +5,7 @@ export class KeyboardApplicationHandler {
 
     constructor(screen: any) {
         screen.on('keypress', (ch: any, key: any) => {
-            fs.writeFileSync('debug.log', 'global handler ' + ch || '' + key || '' + '\n');
+            fs.writeFileSync('debug.log', '[KeyboardApplicationHandler] keypress  ' + JSON.stringify({ch: ch, key: key}) + '\n');
             /*if (key.name === 'up' || (key.name === 'k' && key.ctrl === false)) {
                 //this.jiraListBox.getComponent().up(1);
             } else if (key.name === 'down' || (key.name === 'j' && key.ctrl === false)) {
