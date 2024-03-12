@@ -6,12 +6,15 @@ const fs = require('fs');
 
 export class SearchBar {
 
+    private forComponent;
     private searchBar;
     private searchBarService;
     private screen;
 
-    constructor(screen: any) {
+    constructor(screen: any, forComponent: any) {
+        this.forComponent = forComponent;
         this.searchBar = this.createSearchBar(screen);
+        this.searchBar.hide();
         this.searchBarService = new SearchBarService();
         this.screen = screen;
         this.handleKeyboard();
@@ -70,7 +73,8 @@ export class SearchBar {
             //this.searchBar.render();
             //this.screen.render();
             setTimeout(() => {
-                this.searchBarService.textChanged(this.searchBar.getValue());
+                //this.searchBarService.textChanged(this.searchBar.getValue());
+                this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
                 if (this.searchBarService.getStatus() === 'Edition') {
                     this.searchBar.show();
                     this.searchBar.focus();
@@ -83,7 +87,13 @@ export class SearchBar {
             }, 10);
         });
 
-        this.screen.on('keypress', (ch: any, key: any) => {
+        // 1- on équipe une list box d'une search bar
+
+        this.forComponent.getComponent().on('keypress', (ch: any, key: any) => {
+            fs.writeFileSync('debug.log', `**** from forCOmponznr  \n`);
+            if (this.screen.focused) {
+                fs.writeFileSync('debug.log', `**** screen focused  ${this.screen.focused === this.searchBar}  \n`);
+            }
             this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
             if (this.searchBarService.getStatus() === 'Edition') {
                 this.searchBar.show();

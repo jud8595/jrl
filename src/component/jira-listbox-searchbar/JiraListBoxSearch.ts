@@ -1,5 +1,6 @@
 import {SearchBar} from "~/component/searchbar/SearchBar";
 import {JiraListBox} from "~/component/jira-listbox/JiraListBox";
+import {JiraTicketDetails} from "~/component/jira-ticket-details/JiraTicketDetails";
 
 const blessed = require('blessed');
 const fs = require('fs');
@@ -8,17 +9,27 @@ export class JiraListBoxSearch {
 
     private jiraListBox;
     private searchBar;
+    private jiraTicketDetails;
     private screen;
 
     constructor(screen: any) {
         this.jiraListBox = new JiraListBox(screen);
-        this.searchBar = new SearchBar(screen);
+        this.searchBar = new SearchBar(screen, this.jiraListBox);
+        this.jiraTicketDetails = new JiraTicketDetails(screen);
+        this.jiraTicketDetails.getComponent().hide();
         this.screen = screen;
         this.handleKeyboard();
 
         this.searchBar.onFilterChange((filter: string) => {
             this.jiraListBox.filter(filter);
         });
+
+        this.jiraListBox.subscribeOnDetails((ticket) => {
+            fs.appendFileSync('debug.log', `[jiralistboxsearch] onDetails with ${ticket} \n`);
+            this.jiraTicketDetails.getComponent().setValue(`Details for ticket ${ticket}`);
+            this.jiraTicketDetails.getComponent().focus();
+            this.jiraTicketDetails.getComponent().show();
+        })
     }
 
     public loadJiraTickets() {

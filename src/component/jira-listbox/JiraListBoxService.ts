@@ -1,13 +1,27 @@
+import {Ticket} from "~/component/jira-listbox/JiraTicket";
+import fs from "fs";
+
 const axios = require('axios');
 
-export type Ticket = string;
 
 export class JiraListBoxService {
 
     private tickets: Ticket[];
+    private onDetails: (ticket: Ticket) => void;
 
     constructor() {
         this.tickets = [];
+    }
+
+    public subscribeOnDetails(fn: (ticket: Ticket) => void) {
+        fs.appendFileSync('debug.log', '[jiralistbox service] register onDetails \n');
+        this.onDetails = fn;
+    }
+
+    public showDetails(index: number) {
+        if (this.onDetails) {
+            this.onDetails(this.tickets[index]);
+        }
     }
 
     public getTickets() {
@@ -16,6 +30,10 @@ export class JiraListBoxService {
 
     public filter(filter: string): Ticket[] {
         return this.tickets.filter(ticket => ticket.includes(filter));
+    }
+
+    public details(ticket: Ticket) {
+
     }
 
     public async fetchJiraTickets() {

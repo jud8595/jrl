@@ -37,6 +37,7 @@ export class SearchBarService {
 
         if (key === 'escape' || key === 'return') {
             this.status = 'Display';
+            this.text = null;
         }
 
         else if (key === '/' || key === ':') {
@@ -49,6 +50,16 @@ export class SearchBarService {
 
         else {
             this.text = text;
+        }
+
+        if (this.text?.startsWith('/')) {
+            if (this.notifyFilterChange) {
+                this.notifyFilterChange(this.text.slice(1));
+            }
+        } else if (this.text === null) {
+            if (this.notifyFilterChange) {
+                this.notifyFilterChange('');
+            }
         }
 
         if (key === 'escape') {

@@ -1,4 +1,6 @@
 import { JiraListBoxService } from "~/component/jira-listbox/JiraListBoxService";
+import fs from "fs";
+import {Ticket} from "~/component/jira-listbox/JiraTicket";
 
 const blessed = require('blessed');
 
@@ -12,6 +14,7 @@ export class JiraListBox {
         this.jiraListBoxService = new JiraListBoxService();
         this.screen = screen;
         this.list = this.createListBox(screen);
+        this.registerEvents();
     }
 
     private createListBox(screen: any) {
@@ -49,6 +52,20 @@ export class JiraListBox {
         return this.list;
     }
 
+    public subscribeOnDetails(fn: (ticket: Ticket) => void) {
+        this.jiraListBoxService.subscribeOnDetails(fn);
+    }
+
+    public registerEvents() {
+        this.screen.key('enter', () => {
+            // Get the index of the selected item
+            const selectedIndex = this.list.selected;
+
+            fs.appendFileSync('debug.log', `[jiralistbox] onEnter index=${selectedIndex} \n`);
+            this.jiraListBoxService.showDetails(selectedIndex);
+        });
+    }
+
     public async loadJiraTickets() {
         await this.jiraListBoxService.fetchJiraTickets();
         const issues = this.jiraListBoxService.getTickets();
@@ -61,5 +78,7 @@ export class JiraListBox {
         this.list.setItems(issues);
         this.screen.render();
     }
+
+
 }
 
