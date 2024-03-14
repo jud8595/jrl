@@ -3,3 +3,6 @@ Notes:
   - bring too much complexity regarding component focus
   - cannot use global shortcut like <shift + f> => would be transformed into F
   => allow searchbar to listen for screen event and hide it when done it simplifies focus
+
+Doc:
+https://www.npmjs.com/package/blessed/v/0.1.4#textbox-from-textarea

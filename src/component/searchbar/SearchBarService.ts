@@ -32,10 +32,40 @@ export class SearchBarService {
          }
     }
 
-    public onKeypress(key: string, text: string)  {
+    public onKeypress(key: string, text: string): boolean  {
         fs.appendFileSync('debug.log', `[searchBar service] onKeypress key ${key} and text=${text} \n`);
 
-        if (key === 'escape' || key === 'return') {
+        // will end up here if hit enter in list box (show details)
+        // sol1- ignore all keypress if not edition mode (except activation keys / and :)
+        // sol2- do not call this method except for activating keys
+        // idea: put the keyboard handler in parent component and handle priority (chain with forward=false)
+
+        // sol1: listbox keypress qui forward a searchbar puis shortcut
+        //       attention si keypress g, il ne faut pas declencher keyboard si searchbar est en edition
+        //       en revanche, comment on fait pour savoir que / doit afficher la searchbar
+        //       on peut dire justement que searchbar renvoie forward false
+        //       sinon searchbar ne gere pas / et : (c'est quand même bien de standardiser / et le fait
+        //       que la searchbar puisse faire des actions)
+
+        // sol1: handleKeyboard dans parent. keypress 'enter' (cas1: on ne sait pas si ça passe la searchbar en
+        //       edition ou si c'est un shortcut. cas2: la searchbar reste en permanence affichée)
+        //       pour le cas2, si c'est parent qui gère l'affichage de la searchbar, c'est normal qu'il gère
+        //       le forward ou non du keypress.
+        //   1a. la searchbar dit si elle consomme l'event clavier et parent ne forward pas si consumed
+        //   1b. le parent connaît le comportement fonctionnel de ses children, et sait que si la searchar
+        //       est en edition (ou vient de disparaître) alors pas besoin de forward
+
+        // sol1: la listbox a des actions/shortcuts et / et : en font partie (très simple)
+        // sol2: je forward tous les keypress a searchbar qui me dit que l'event a été consumed => très compliqué!
+
+        // je pense que searchbar est trop compliqué, pas besoin de status display ou edition,
+        // si le composant a le focus alors on est en edition naturellement sinon non.
+
+        if (key === 'p') {
+            return process.exit(0);
+        }
+
+        if (key === 'escape' || key === 'return') { // add 'enter' also ? fired at the same time as 'return'
             this.status = 'Display';
             this.text = null;
         }
@@ -49,7 +79,9 @@ export class SearchBarService {
         }
 
         else {
-            this.text = text;
+            if (this.status === 'Edition') {
+                this.text = text;
+            }
         }
 
         if (this.text?.startsWith('/')) {
@@ -62,6 +94,8 @@ export class SearchBarService {
             }
         }
 
+        return false;
+/*
         if (key === 'escape') {
             this.mode = null;
             return;
@@ -82,7 +116,7 @@ export class SearchBarService {
                 fs.appendFileSync('debug.log', '[searchbar service] notify with ' + this.filter + '\n');
                 this.notifyFilterChange(this.filter);
             }
-        }
+        }*/
     }
 
     public onFilterChange(fn: (filter: string) => void) {

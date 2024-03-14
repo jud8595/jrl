@@ -47,6 +47,10 @@ export class SearchBar {
         });
     }
 
+    public keypressed(key: string): boolean {
+        return this.searchBarService.onKeypress(key, this.searchBar.getValue());
+    }
+
     private handleKeyboard() {
 /*
         this.screen.key(':', () => {
@@ -69,6 +73,35 @@ export class SearchBar {
 
 
 */
+        this.searchBar.on('submit', () => {
+            this.searchBar.hide();
+            this.searchBar.setValue(this.searchBarService.getText());
+            this.searchBar.render();
+            this.screen.render();
+        });
+
+        this.searchBar.on('cancel', () => {
+            fs.writeFileSync('debug.log', `[searchBar] event cancel \n`);
+            this.searchBar.hide();
+            this.searchBar.clearValue();
+            this.searchBarService.onKeypress('', this.searchBar.getValue());
+            this.searchBar.render();
+            this.screen.render();
+        })
+
+        this.searchBar.on('keypress', (ch: any, key: any) => {
+            setTimeout(() => {
+                //this.searchBarService.textChanged(this.searchBar.getValue());
+                if (this.searchBar.focused) {
+                    this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
+                }
+
+                //this.searchBar.setValue(this.searchBarService.getText());
+                this.searchBar.render();
+                this.screen.render();
+            }, 10);
+        });
+/*
         this.searchBar.on('keypress', (ch: any, key: any) => {
             //this.searchBar.render();
             //this.screen.render();
@@ -81,30 +114,16 @@ export class SearchBar {
                 } else {
                     this.searchBar.hide();
                 }
+                fs.writeFileSync('debug.log', `[searchBar] setting value(0) ${this.searchBarService.getText()} \n`);
                 this.searchBar.setValue(this.searchBarService.getText());
                 this.searchBar.render();
                 this.screen.render();
             }, 10);
         });
-
+*/
         // 1- on équipe une list box d'une search bar
 
-        this.forComponent.getComponent().on('keypress', (ch: any, key: any) => {
-            fs.writeFileSync('debug.log', `**** from forCOmponznr  \n`);
-            if (this.screen.focused) {
-                fs.writeFileSync('debug.log', `**** screen focused  ${this.screen.focused === this.searchBar}  \n`);
-            }
-            this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
-            if (this.searchBarService.getStatus() === 'Edition') {
-                this.searchBar.show();
-                this.searchBar.focus();
-            } else {
-                this.searchBar.hide();
-            }
-            this.searchBar.setValue(this.searchBarService.getText());
-            this.searchBar.render();
-            this.screen.render();
-        });
+
 
         // si la searchbar reste tout le temps visible alors '/' est append
         // si la searchbar se cache, alors '/' l'affiche
