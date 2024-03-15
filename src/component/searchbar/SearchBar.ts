@@ -1,7 +1,6 @@
 import {SearchBarService} from "~/component/searchbar/SearchBarService";
 
 const blessed = require('blessed');
-const axios = require('axios');
 const fs = require('fs');
 
 export class SearchBar {
@@ -10,6 +9,7 @@ export class SearchBar {
     private searchBar;
     private searchBarService;
     private screen;
+    private notifyFilterChange;
 
     constructor(screen: any, forComponent: any) {
         this.forComponent = forComponent;
@@ -21,6 +21,7 @@ export class SearchBar {
     }
 
     public onFilterChange(fn: (filter: string) => void) {
+        this.notifyFilterChange = fn;
         this.searchBarService.onFilterChange(fn);
     }
 
@@ -47,8 +48,61 @@ export class SearchBar {
         });
     }
 
-    public keypressed(key: string): boolean {
+    /*public keypressed(key: string): boolean {
         return this.searchBarService.onKeypress(key, this.searchBar.getValue());
+    }*/
+
+    public setValue(value: string): boolean {
+        const result = this.searchBarService.setValue(value);
+        this.searchBar.setValue(this.searchBarService.getText());
+        if (result) {
+            this.searchBar.focus();
+            this.searchBar.show();
+            this.screen.render();
+        }
+        return result;
+    }
+
+    public clearValue() {
+        this.searchBar.clearValue();
+    }
+
+    public getValue() {
+        return this.searchBar.getValue();
+    }
+
+    public keypressed(key: string) {
+        let consumed = false;
+        if (!this.searchBar.focused) { // or not visible
+            if (key === '/') {
+                if (!this.searchBar.getValue()) {
+                    this.searchBar.setValue('/');
+                }
+                this.searchBar.focus();
+                this.searchBar.show();
+                consumed = true;
+            } else if (key === ':') {
+                this.searchBar.setValue(':');
+                this.searchBar.focus();
+                this.searchBar.show();
+                consumed = true;
+            }
+        }
+
+        if (key === 'escape') {
+            this.searchBar.setValue('');
+            this.searchBar.hide();
+            consumed = true;
+        }
+
+        if (this.notifyFilterChange) {
+            this.notifyFilterChange(this.searchBar.getValue() ? this.searchBar.getValue().slice(1) : '');
+        }
+
+        this.searchBar.render();
+        this.screen.render();
+
+        return consumed;
     }
 
     private handleKeyboard() {
@@ -75,7 +129,7 @@ export class SearchBar {
 */
         this.searchBar.on('submit', () => {
             this.searchBar.hide();
-            this.searchBar.setValue(this.searchBarService.getText());
+            //this.searchBar.setValue(this.searchBarService.getText());
             this.searchBar.render();
             this.screen.render();
         });
@@ -84,7 +138,7 @@ export class SearchBar {
             fs.writeFileSync('debug.log', `[searchBar] event cancel \n`);
             this.searchBar.hide();
             this.searchBar.clearValue();
-            this.searchBarService.onKeypress('', this.searchBar.getValue());
+            //this.searchBarService.onKeypress('', this.searchBar.getValue());
             this.searchBar.render();
             this.screen.render();
         })
@@ -92,13 +146,12 @@ export class SearchBar {
         this.searchBar.on('keypress', (ch: any, key: any) => {
             setTimeout(() => {
                 //this.searchBarService.textChanged(this.searchBar.getValue());
-                if (this.searchBar.focused) {
+                /*if (this.searchBar.focused) {
                     this.searchBarService.onKeypress(key.full, this.searchBar.getValue());
-                }
+                }*/
 
-                //this.searchBar.setValue(this.searchBarService.getText());
-                this.searchBar.render();
-                this.screen.render();
+                this.keypressed(key?.full);
+
             }, 10);
         });
 /*

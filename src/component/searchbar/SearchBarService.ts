@@ -32,6 +32,18 @@ export class SearchBarService {
          }
     }
 
+    public setValue(value: string) {
+        if (value.startsWith('/') || value.startsWith(':')) {
+            this.text = value;
+            if (this.notifyFilterChange) {
+                this.notifyFilterChange(this.text.slice(1));
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public onKeypress(key: string, text: string): boolean  {
         fs.appendFileSync('debug.log', `[searchBar service] onKeypress key ${key} and text=${text} \n`);
 

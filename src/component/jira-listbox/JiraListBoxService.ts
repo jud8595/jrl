@@ -18,9 +18,9 @@ export class JiraListBoxService {
         this.onDetails = fn;
     }
 
-    public showDetails(index: number) {
+    public showDetails(item: Ticket) {
         if (this.onDetails) {
-            this.onDetails(this.tickets[index]);
+            this.onDetails(item);
         }
     }
 

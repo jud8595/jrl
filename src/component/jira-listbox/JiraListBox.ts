@@ -57,12 +57,16 @@ export class JiraListBox {
     }
 
     public registerEvents() {
-        this.screen.key('enter', () => {
-            // Get the index of the selected item
-            const selectedIndex = this.list.selected;
+        //this.screen.key('enter', () => {
+        this.list.on('keypress', (ch: any, key: any) => {
+            if (key?.full === 'enter') {
+                // Get the index of the selected item
+                const selectedIndex = this.list.selected;
+                const item = this.list.getItem(selectedIndex).getContent();
 
-            fs.appendFileSync('debug.log', `[jiralistbox] onEnter index=${selectedIndex} \n`);
-            this.jiraListBoxService.showDetails(selectedIndex);
+                fs.appendFileSync('debug.log', `[jiralistbox] onEnter index=${selectedIndex} and ${item} \n`);
+                this.jiraListBoxService.showDetails(item);
+            }
         });
     }
 

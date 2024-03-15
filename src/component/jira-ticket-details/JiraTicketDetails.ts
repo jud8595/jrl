@@ -14,7 +14,7 @@ export class JiraTicketDetails {
     }
 
     public registerEvents() {
-        this.screen.key('escape', () => {
+        this.textarea.key('escape', () => {
             fs.writeFileSync('debug.log', '[jiraticketdetails] escape');
             this.textarea.hide();
             this.screen.render();
