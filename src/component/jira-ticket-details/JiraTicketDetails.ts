@@ -10,12 +10,11 @@ export class JiraTicketDetails {
     constructor(screen: any) {
         this.screen = screen;
         this.textarea = this.createTextArea(screen);
-        this.registerEvents();
+        this.handleKeyboard();
     }
 
-    public registerEvents() {
+    public handleKeyboard() {
         this.textarea.key('escape', () => {
-            fs.writeFileSync('debug.log', '[jiraticketdetails] escape');
             this.textarea.hide();
             this.screen.render();
         });
@@ -32,7 +31,7 @@ export class JiraTicketDetails {
             label: 'JIRA ticket details',
             keys: true,
             //vi: true,
-            //mouse: true,
+            mouse: true,
             style: {
                 selected: {
                     fg: 'white',

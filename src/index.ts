@@ -7,11 +7,48 @@ const screen = blessed.screen({
     smartCSR: true
 });
 
+
 const jiraListBoxSearch = new JiraListBoxSearch(screen);
 jiraListBoxSearch.loadJiraTickets();
 new KeyboardApplicationHandler(screen);
 
 
+/*
+const listTable = blessed.listtable({
+    parent: screen,
+    top: 'center',
+    left: 'center',
+    width: '50%',
+    height: '50%',
+    border: 'line',
+    align: 'center',
+    keys: true,
+    style: {
+        border: { fg: 'blue' },
+        header: { fg: 'cyan', bold: true },
+        cell: { fg: 'magenta' }
+    },
+    data: [
+        ['Header 1', 'Header 2', 'Header 3'],
+        ['Row 1 Col 1', 'Row 1 Col 2', 'Row 1 Col 3'],
+        ['Row 2 Col 1', 'Row 2 Col 2', 'Row 2 Col 3'],
+        ['Row 3 Col 1', 'Row 3 Col 2', 'Row 3 Col 3']
+    ]
+});
+
+// Event handling for row selection
+listTable.on('select', (item, index) => {
+    console.log(`Selected row: ${index}`);
+});
+
+// Handling key presses
+screen.key(['escape', 'q', 'C-c'], (ch, key) => {
+    return process.exit(0);
+});
+
+// Focus on the listTable
+listTable.focus();
+*/
 screen.render();
 
 /*

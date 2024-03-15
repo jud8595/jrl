@@ -5,15 +5,7 @@ export class KeyboardApplicationHandler {
 
     constructor(screen: any) {
         screen.on('keypress', (ch: any, key: any) => {
-            fs.writeFileSync('debug.log', '[KeyboardApplicationHandler] keypress  ' + JSON.stringify({ch: ch, key: key}) + '\n');
-            /*if (key.name === 'up' || (key.name === 'k' && key.ctrl === false)) {
-                //this.jiraListBox.getComponent().up(1);
-            } else if (key.name === 'down' || (key.name === 'j' && key.ctrl === false)) {
-                //this.jiraListBox.getComponent().down(1);
-            } else if (key.name === '/' || key.name === ':') {
-                //this.searchBar.getComponent().focus();
-            }*/
-            //this.screen.render();
+            //fs.writeFileSync('debug.log', '[KeyboardApplicationHandler] keypress  ' + JSON.stringify({ch: ch, key: key}) + '\n');
         });
 
         // Quit on Control-C
